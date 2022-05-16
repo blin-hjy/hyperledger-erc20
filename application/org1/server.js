@@ -11,7 +11,7 @@ const FabricCAServices = require('fabric-ca-client');
 const path = require('path');
 const fs = require('fs'); 
 
-app.post('/api/minter', async function (req, res) {
+app.post('/api/v1.0/minter', async function (req, res) {
 
     try {
         const username = req.body.id
@@ -49,7 +49,7 @@ app.post('/api/minter', async function (req, res) {
 });
 
 
-app.post('/api/Burn', async function (req, res) {
+app.post('/api/v1.0/Burn', async function (req, res) {
     try {
         const username = req.body.id
         const ccpPath = path.resolve(__dirname, '..', '..', 'network', 'organizations', 'ccp', 'connection-org1.json');
@@ -85,7 +85,7 @@ app.post('/api/Burn', async function (req, res) {
     }
 });
 
-app.post('/api/Transfer', async function (req, res) {
+app.post('/api/v1.0/Transfer', async function (req, res) {
     try {
         const username = req.body.id
 
@@ -108,7 +108,7 @@ app.post('/api/Transfer', async function (req, res) {
         const network = await gateway.getNetwork('mychannel');
         const contract = network.getContract('erc20');
 
-        const result = await contract.submitTransaction('Transfer', req.body.to, req.body._value); //
+        const result = await contract.submitTransaction('Transfer', req.body.to, req.body._value);
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
         res.status(200).json({response: result.toString("ok")});
 
@@ -120,7 +120,7 @@ app.post('/api/Transfer', async function (req, res) {
     }
 });
 
-app.post('/api/BalanceOf', async function (req, res) {
+app.post('/api/v1.0/BalanceOf', async function (req, res) {
 
     try {
         const username = req.body.id
@@ -133,7 +133,7 @@ app.post('/api/BalanceOf', async function (req, res) {
             
         const identity = await wallet.get(username);
         if (!identity) {
-            console.log('An identity for the user "appUser" does not exist in the wallet');
+            console.log(`An identity for the user ${username} does not exist in the wallet`);
             console.log('Run the registerUser.js application before retrying');
             return;
         }
@@ -156,7 +156,7 @@ app.post('/api/BalanceOf', async function (req, res) {
     }
 });
 
-app.post('/api/ClientAccountBalance', async function (req, res) {
+app.post('/api/v1.0/ClientAccountBalance', async function (req, res) {
 
     try {
         const username = req.body.id
@@ -169,8 +169,7 @@ app.post('/api/ClientAccountBalance', async function (req, res) {
             
         const identity = await wallet.get(username);
         if (!identity) {
-            console.log('An identity for the user "appUser" does not exist in the wallet');
-            console.log('Run the registerUser.js application before retrying');
+            console.log(`An identity for the user ${username} does not exist in the wallet`);
             return;
         }
         
@@ -192,7 +191,7 @@ app.post('/api/ClientAccountBalance', async function (req, res) {
     }
 });
 
-app.post('/api/ClientAccountID', async function (req, res) {
+app.post('/api/v1.0/ClientAccountID', async function (req, res) {
     try {
         const username = req.body.id
 
@@ -205,8 +204,7 @@ app.post('/api/ClientAccountID', async function (req, res) {
             
         const identity = await wallet.get(username);
         if (!identity) {
-            console.log('An identity for the user "username" does not exist in the wallet');
-            console.log('Run the registerUser.js application before retrying');
+            console.log(`An identity for the user ${username} does not exist in the wallet`);
             return;
         }
         
@@ -216,7 +214,7 @@ app.post('/api/ClientAccountID', async function (req, res) {
         const network = await gateway.getNetwork('mychannel');
         const contract = network.getContract('erc20');
 
-        const result = await contract.evaluateTransaction('ClientAccountID'); //
+        const result = await contract.evaluateTransaction('ClientAccountID');
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
         res.status(200).json({response: result.toString()});
 
@@ -228,7 +226,7 @@ app.post('/api/ClientAccountID', async function (req, res) {
     }
 });
 
-app.post('/api/TotalSupply', async function (req, res) {
+app.post('/api/v1.0/TotalSupply', async function (req, res) {
     try {
         const username = req.body.id
 
@@ -241,7 +239,7 @@ app.post('/api/TotalSupply', async function (req, res) {
             
         const identity = await wallet.get(username);
         if (!identity) {
-            console.log('An identity for the user "appUser" does not exist in the wallet');
+            console.log(`An identity for the user ${username} does not exist in the wallet`);
             console.log('Run the registerUser.js application before retrying');
             return;
         }
@@ -252,7 +250,7 @@ app.post('/api/TotalSupply', async function (req, res) {
         const network = await gateway.getNetwork('mychannel');
         const contract = network.getContract('erc20');
 
-        const result = await contract.evaluateTransaction('TotalSupply'); //
+        const result = await contract.evaluateTransaction('TotalSupply');
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
         res.status(200).json({response: result.toString()});
 
@@ -264,7 +262,7 @@ app.post('/api/TotalSupply', async function (req, res) {
     }
 });
 
-app.post('/api/Approve', async function (req, res) {
+app.post('/api/v1.0/Approve', async function (req, res) {
 
     try {
 
@@ -278,7 +276,7 @@ app.post('/api/Approve', async function (req, res) {
             
         const identity = await wallet.get(username);
         if (!identity) {
-            console.log('An identity for the user "appUser" does not exist in the wallet');
+            console.log(`An identity for the user ${username} does not exist in the wallet`);
             console.log('Run the registerUser.js application before retrying');
             return;
         }
@@ -289,7 +287,7 @@ app.post('/api/Approve', async function (req, res) {
         const network = await gateway.getNetwork('mychannel');
         const contract = network.getContract('erc20');
 
-        const result = await contract.submitTransaction('Approve', req.body.spender, req.body.value); //
+        const result = await contract.submitTransaction('Approve', req.body.spender, req.body.value);
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
         res.status(200).json({response: result.toString("ok")});
 
@@ -301,7 +299,7 @@ app.post('/api/Approve', async function (req, res) {
     }
 });
 
-app.post('/api/Allowance', async function (req, res) {
+app.post('/api/v1.0/Allowance', async function (req, res) {
     try {
         const username = req.body.id
         const ccpPath = path.resolve(__dirname, '..', '..', 'network', 'organizations', 'ccp', 'connection-org1.json');
@@ -313,7 +311,7 @@ app.post('/api/Allowance', async function (req, res) {
             
         const identity = await wallet.get(username);
         if (!identity) {
-            console.log('An identity for the user "appUser" does not exist in the wallet');
+            console.log(`An identity for the user ${username} does not exist in the wallet`);
             return;
         }
         
@@ -323,7 +321,7 @@ app.post('/api/Allowance', async function (req, res) {
         const network = await gateway.getNetwork('mychannel');
         const contract = network.getContract('erc20');
 
-        const result = await contract.evaluateTransaction('Allowance', req.body.minter, req.body.spender); //
+        const result = await contract.evaluateTransaction('Allowance', req.body.minter, req.body.spender);
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
         res.status(200).json({response: result.toString()});
 
@@ -335,7 +333,7 @@ app.post('/api/Allowance', async function (req, res) {
     }
 });
 
-app.post('/api/TransferFrom', async function (req, res) {
+app.post('/api/v1.0/TransferFrom', async function (req, res) {
     try {
         const username = req.body.id
         const ccpPath = path.resolve(__dirname, '..', '..', 'network', 'organizations', 'ccp', 'connection-org1.json');
@@ -347,8 +345,7 @@ app.post('/api/TransferFrom', async function (req, res) {
             
         const identity = await wallet.get(username);
         if (!identity) {
-            console.log('An identity for the user "appUser" does not exist in the wallet');
-            console.log('Run the registerUser.js application before retrying');
+            console.log(`An identity for the user ${username} does not exist in the wallet`);
             return;
         }
         
@@ -358,7 +355,7 @@ app.post('/api/TransferFrom', async function (req, res) {
         const network = await gateway.getNetwork('mychannel');
         const contract = network.getContract('erc20');
 
-        const result = await contract.submitTransaction('TransferFrom', req.body.from ,req.body.to, req.body.value); //
+        const result = await contract.submitTransaction('TransferFrom', req.body.from ,req.body.to, req.body.value);
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
         res.status(200).json({response: result.toString()});
 
@@ -370,7 +367,7 @@ app.post('/api/TransferFrom', async function (req, res) {
     }
 });
 
-app.post('/api/register', async function (req, res) {
+app.post('/api/v1.0/register', async function (req, res) {
     try {
 
         const username = req.body.id;

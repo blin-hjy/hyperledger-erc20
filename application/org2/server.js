@@ -12,77 +12,7 @@ const path = require('path');
 const fs = require('fs');
 
 
-app.get('/api/test', async function (req, res) {
-    try {
-
-        const ccpPath = path.resolve(__dirname, '..', '..', 'network', 'organizations', 'ccp', 'connection-org2.json');
-        const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
-            
-        const walletPath = path.join(process.cwd(), 'wallet');
-        const wallet = await Wallets.newFileSystemWallet(walletPath);
-        console.log(`Wallet path: ${walletPath}`);
-            
-        const identity = await wallet.get('appUser');
-        if (!identity) {
-            console.log('An identity for the user "appUser" does not exist in the wallet');
-            console.log('Run the registerUser.js application before retrying');
-            return;
-        }
-        
-        const gateway = new Gateway();
-        await gateway.connect(ccp, { wallet, identity: 'appUser', discovery: { enabled: true, asLocalhost: true } });
-        
-        const network = await gateway.getNetwork('mychannel');
-        const contract = network.getContract('erc20');
-
-        const result = await contract.evaluateTransaction('test');
-        console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
-        res.status(200).json({response: result.toString()});
-
-        await gateway.disconnect();
-
-    } catch (error) {
-        console.error(`Failed to evaluate transaction: ${error}`);
-        res.status(404).json({"response":"잘못된 값 또는 서버에서 값이 제대로 처리되지 않았습니다."});
-    }
-});
-
-app.post('/api/Burn', async function (req, res) {
-    try {
-
-        const ccpPath = path.resolve(__dirname, '..', '..', 'network', 'organizations', 'ccp', 'connection-org2.json');
-        const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
-
-        const walletPath = path.join(process.cwd(), 'wallet');
-        const wallet = await Wallets.newFileSystemWallet(walletPath);
-        console.log(`Wallet path: ${walletPath}`);
-
-        const identity = await wallet.get('appUser');
-        if (!identity) {
-            console.log('An identity for the user "appUser" does not exist in the wallet');
-            console.log('Run the registerUser.js application before retrying');
-            return;
-        }
-
-        const gateway = new Gateway();
-        await gateway.connect(ccp, { wallet, identity: 'appUser', discovery: { enabled: true, asLocalhost: true } });
-
-        const network = await gateway.getNetwork('mychannel');
-        const contract = network.getContract('erc20');
-
-        const result = await contract.submitTransaction('Burn', req.body.key, req.body.init_amount);
-        console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
-        res.status(200).json({response: result.toString()});
-
-        await gateway.disconnect();
-
-    } catch (error) {
-        console.error(`Failed to evaluate transaction: ${error}`);
-        res.status(404).json({"response":"잘못된 값 또는 서버에서 값이 제대로 처리되지 않았습니다."});
-    }
-});
-
-app.post('/api/Transfer', async function (req, res) {
+app.post('/api/v1.0/Transfer', async function (req, res) {
     try {
         const username = req.body.id
         const ccpPath = path.resolve(__dirname, '..', '..', 'network', 'organizations', 'ccp', 'connection-org2.json');
@@ -105,7 +35,7 @@ app.post('/api/Transfer', async function (req, res) {
         const network = await gateway.getNetwork('mychannel');
         const contract = network.getContract('erc20');
 
-        const result = await contract.submitTransaction('Transfer', req.body.to, req.body._value); //
+        const result = await contract.submitTransaction('Transfer', req.body.to, req.body._value);
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
         res.status(200).json({response: result.toString()});
 
@@ -117,10 +47,10 @@ app.post('/api/Transfer', async function (req, res) {
     }
 });
 
-app.post('/api/BalanceOf', async function (req, res) {
+app.post('/api/v1.0/BalanceOf', async function (req, res) {
 
     try {
-
+        const username = req.body.id
         const ccpPath = path.resolve(__dirname, '..', '..', 'network', 'organizations', 'ccp', 'connection-org2.json');
         const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
             
@@ -128,20 +58,20 @@ app.post('/api/BalanceOf', async function (req, res) {
         const wallet = await Wallets.newFileSystemWallet(walletPath);
         console.log(`Wallet path: ${walletPath}`);
             
-        const identity = await wallet.get('appUser');
+        const identity = await wallet.get(username);
         if (!identity) {
-            console.log('An identity for the user "appUser" does not exist in the wallet');
+            console.log(`An identity for the user ${username} does not exist in the wallet`);
             console.log('Run the registerUser.js application before retrying');
             return;
         }
         
         const gateway = new Gateway();
-        await gateway.connect(ccp, { wallet, identity: 'appUser', discovery: { enabled: true, asLocalhost: true } });
+        await gateway.connect(ccp, { wallet, identity: username, discovery: { enabled: true, asLocalhost: true } });
         
         const network = await gateway.getNetwork('mychannel');
         const contract = network.getContract('erc20');
 
-        const result = await contract.submitTransaction('BalanceOf');
+        const result = await contract.submitTransaction('BalanceOf', req.body.minter);
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
         res.status(200).json({response: result.toString()});
 
@@ -153,7 +83,7 @@ app.post('/api/BalanceOf', async function (req, res) {
     }
 });
 
-app.post('/api/ClientAccountBalance', async function (req, res) {
+app.post('/api/v1.0/ClientAccountBalance', async function (req, res) {
     try {
         const username = req.body.id
         const ccpPath = path.resolve(__dirname, '..', '..', 'network', 'organizations', 'ccp', 'connection-org2.json');
@@ -175,7 +105,7 @@ app.post('/api/ClientAccountBalance', async function (req, res) {
         const network = await gateway.getNetwork('mychannel');
         const contract = network.getContract('erc20');
 
-        const result = await contract.evaluateTransaction('ClientAccountBalance'); //
+        const result = await contract.evaluateTransaction('ClientAccountBalance');
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
         res.status(200).json({response: result.toString()});
 
@@ -187,7 +117,7 @@ app.post('/api/ClientAccountBalance', async function (req, res) {
     }
 });
 
-app.post('/api/ClientAccountID', async function (req, res) {
+app.post('/api/v1.0/ClientAccountID', async function (req, res) {
     try {
         const username = req.body.id
 
@@ -200,8 +130,7 @@ app.post('/api/ClientAccountID', async function (req, res) {
             
         const identity = await wallet.get(username);
         if (!identity) {
-            console.log('An identity for the user "username" does not exist in the wallet');
-            console.log('Run the registerUser.js application before retrying');
+            console.log(`An identity for the user ${username} does not exist in the wallet`);
             return;
         }
         
@@ -223,7 +152,7 @@ app.post('/api/ClientAccountID', async function (req, res) {
     }
 });
 
-app.post('/api/TotalSupply', async function (req, res) {
+app.post('/api/v1.0/TotalSupply', async function (req, res) {
     try {
         const username = req.body.id
         const ccpPath = path.resolve(__dirname, '..', '..', 'network', 'organizations', 'ccp', 'connection-org2.json');
@@ -245,7 +174,7 @@ app.post('/api/TotalSupply', async function (req, res) {
         const network = await gateway.getNetwork('mychannel');
         const contract = network.getContract('erc20');
 
-        const result = await contract.evaluateTransaction('TotalSupply', req.body.value); //
+        const result = await contract.evaluateTransaction('TotalSupply');
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
         res.status(200).json({response: result.toString()});
 
@@ -257,7 +186,7 @@ app.post('/api/TotalSupply', async function (req, res) {
     }
 });
 
-app.post('/api/Approve', async function (req, res) {
+app.post('/api/v1.0/Approve', async function (req, res) {
 
     try {
         const username = req.body.id
@@ -280,7 +209,7 @@ app.post('/api/Approve', async function (req, res) {
         const network = await gateway.getNetwork('mychannel');
         const contract = network.getContract('erc20');
 
-        const result = await contract.evaluateTransaction('Approve', req.body.value); //
+        const result = await contract.evaluateTransaction('Approve', req.body.spender, req.body.value);
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
         res.status(200).json({response: result.toString()});
 
@@ -292,7 +221,7 @@ app.post('/api/Approve', async function (req, res) {
     }
 });
 
-app.post('/api/Allowance', async function (req, res) {
+app.post('/api/v1.0/Allowance', async function (req, res) {
     try {
         const username = req.body.id
         const ccpPath = path.resolve(__dirname, '..', '..', 'network', 'organizations', 'ccp', 'connection-org2.json');
@@ -314,7 +243,7 @@ app.post('/api/Allowance', async function (req, res) {
         const network = await gateway.getNetwork('mychannel');
         const contract = network.getContract('erc20');
 
-        const result = await contract.evaluateTransaction('Allowance', req.body.value); //
+        const result = await contract.evaluateTransaction('Allowance', req.body.minter, req.body.spender);
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
         res.status(200).json({response: result.toString()});
 
@@ -326,10 +255,10 @@ app.post('/api/Allowance', async function (req, res) {
     }
 });
 
-app.post('/api/TransferFrom', async function (req, res) {
+app.post('/api/v1.0/TransferFrom', async function (req, res) {
 
     try {
-
+        const username = req.body.id
         const ccpPath = path.resolve(__dirname, '..', '..', 'network', 'organizations', 'ccp', 'connection-org2.json');
         const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
             
@@ -349,7 +278,7 @@ app.post('/api/TransferFrom', async function (req, res) {
         const network = await gateway.getNetwork('mychannel');
         const contract = network.getContract('erc20');
 
-        const result = await contract.evaluateTransaction('TransferFrom');
+        const result = await contract.evaluateTransaction('TransferFrom', req.body.from ,req.body.to, req.body.value);
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
         res.status(200).json({response: result.toString()});
 
@@ -361,7 +290,7 @@ app.post('/api/TransferFrom', async function (req, res) {
     }
 });
 
-app.post('/api/register', async function (req, res) {
+app.post('/api/v1.0/register', async function (req, res) {
     try {
 
         const username = req.body.id;
