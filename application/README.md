@@ -89,7 +89,9 @@ http://IP:Port/api/v1.0/function
  ```
  + __Response__
  ```json
- 
+ {
+    "response": "ok"
+ }
  ```
  
  - __Error__
