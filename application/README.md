@@ -1,7 +1,7 @@
 chaincode api server
 ====================
 
-## programs
+## Programs
 ```
 nodejs
 ```
