@@ -25,7 +25,7 @@ app.post('/api/v1.0/minter', async function (req, res) {
             
         const identity = await wallet.get(username);
         if (!identity) {
-            console.log('An identity for the user "appUser" does not exist in the wallet');
+            console.log(`An identity for the user ${username} does not exist in the wallet`);
             console.log('Run the registerUser.js application before retrying');
             return;
         }
@@ -36,7 +36,7 @@ app.post('/api/v1.0/minter', async function (req, res) {
         const network = await gateway.getNetwork('mychannel');
         const contract = network.getContract('erc20');
 
-        const result = await contract.submitTransaction('Mint', req.body.totalsupply); //
+        const result = await contract.submitTransaction('Mint', req.body.totalsupply);
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
         res.status(200).json({response: "ok"});
 
