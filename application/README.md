@@ -28,7 +28,8 @@ node server.js > /dev/null 2>&1 &
 ```
 
 ## information
-```
++ There is no minter in the exchange api
+```json
 {
     "id" //The id value in the body of the api refers to uthe logged-in user.
 }
